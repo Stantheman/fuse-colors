@@ -1,0 +1,57 @@
+=head1 NAME
+
+fuse-colors.pl - automatically make most commands colorful
+
+=head1 USAGE
+
+        mkdir /tmp/fuse-colors
+        ./fuse-colors.pl /tmp/fuse-colors
+        PATH=/tmp/fuse-colors
+
+=head1 DESCRIPTION
+
+This script helps you to automatically append " | lolcat" to most commands.
+
+I was in #climagic on Freenode when "adprice" asked if there was a way to
+have bash automatically append " | lolcat" to all of his commands. The channel
+discussed different solutions for a bit before I decided to make fuse-colors.
+When you mount fuse-colors to a directory, the next immediate step should be to
+set your PATH=/that/directory. Once this step is complete, all of your command output
+will be very pretty.
+
+fuse-colors attempts to mimic your PATH, so when you set your PATH=/directory, you'll
+still be able to run any of the commands that were in your path previously. Behind
+the scenes, fuse-colors hands out mini perl scripts for any file requested. It
+shells out to the command requested (the "filename"), appending lolcat. fuse-colors
+respects all arguments passed and allows for the shell to continue using built-ins
+and so on.
+
+Unfortunately, running vim with an automatic pipe was not as pretty. On startup,
+fuse-colors builds a list of binaries that have been linked to ncurses. Any
+request for these files will be run without the " | lolcat" command.
+
+=head1 DEPENDENCIES
+
+fuse-colors depends on the Fuse module, the "objdump" command, and lolcat:
+
+https://github.com/busyloop/lolcat
+
+lolcat is like the `cat` command, except its output is very colorful. On Debian,
+the dependencies can be installed by running:
+
+        apt-get install libfuse-perl binutils
+        gem install lolcat
+
+Newer Ubuntu systems have a package for lolcat.
+
+=head1 BUGS
+
+I'm not aware of any outstanding bugs at this time, although there are parts of the
+code I'd like to make more resilient. Properly daemonizing fuse-colors
+may be helpful in the event that this turns out to be exciting for people. If you
+ctrl-c out of fuse-colors, please note that you'll need to unmount the path you
+specified originally before remounting.
+
+=head1 AUTHOR
+
+Stan Schwertly (http://www.schwertly.com)
