@@ -32,7 +32,7 @@ request for these files will be run without the " | lolcat" command.
 
 =head1 DEPENDENCIES
 
-fuse-colors depends on the Fuse module, the "objdump" command, and lolcat by @busyloop:
+fuse-colors depends on the Fuse module, the "objdump" command, and lolcat:
 
 https://github.com/busyloop/lolcat
 
