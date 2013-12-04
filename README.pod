@@ -44,6 +44,21 @@ the dependencies can be installed by running:
 
 Newer Ubuntu systems have a package for lolcat.
 
+=head1 EXAMPLES
+
+Get set up by making a directory and mounting fuse-colors there:
+        
+        mkdir /tmp/fuse-colors
+        ./fuse-colors.pl /tmp/fuse-colors
+        PATH=/tmp/fuse-colors
+
+You could technically keep your PATH on the end (PATH=/tmp/fuse-colors:$PATH), 
+but it's less exciting that way. Then run whatever you'd normally run, or 
+whatever generates lots of pretty words.
+
+        yes "this is awesome"
+        ls -lha
+
 =head1 BUGS
 
 I'm not aware of any outstanding bugs at this time, although there are parts of the
