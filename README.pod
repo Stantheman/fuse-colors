@@ -39,7 +39,7 @@ https://github.com/busyloop/lolcat
 lolcat is like the `cat` command, except its output is very colorful. On Debian,
 the dependencies can be installed by running:
 
-        apt-get install libfuse-perl binutils
+        apt-get install fuse libfuse-perl binutils
         gem install lolcat
 
 Newer Ubuntu systems have a package for lolcat.
