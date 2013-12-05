@@ -33,9 +33,10 @@ Fuse::main(
 # otherwise just exec and move on
 sub fuse_read {
 	my ($file) = _filename_fixup(shift);
+	my ($size, $offset, $fh) = @_;
 
 	# both scenarios use this perl
-	my $common_perl = qq{#!/usr/bin/perl
+	my $result = qq{#!/usr/bin/perl
 use strict;
 use warnings;
 
@@ -45,11 +46,16 @@ exec "PATH='} . join(':', @paths) . qq{' $file \$input};
 
 	# if we're execing an ncurses binary, don't colorize it
 	if (exists($bad_list->{$file})) {
-		return $common_perl . '";' . "\n";
+		$result .= '";' . "\n";
 	} else {
-		return $common_perl . qq{ | $lolcat";
+		$result .= qq{ | $lolcat";
 };
 	}
+
+	# from Fuse example, modified
+	return -EINVAL() if $offset > length($result);
+	return 0 if $offset == length($result);
+	return substr($result,$offset,$size);
 }
 
 # show the user stuff that looks real
