@@ -4,10 +4,8 @@ fuse-colors.pl - automatically make most commands colorful
 
 =head1 USAGE
 
-        mkdir /tmp/fuse-colors
-        ./fuse-colors.pl /tmp/fuse-colors
-		bash
-        PATH=/tmp/fuse-colors
+	./fuse-colors.pl /tmp/fuse
+	./fuse-colors.pl /tmp/fuse '__command__ && echo "haha"'
 
 =head1 DESCRIPTION
 
@@ -31,6 +29,11 @@ Unfortunately, running vim with an automatic pipe was not as pretty. On startup,
 fuse-colors builds a list of binaries that have been linked to ncurses. Any
 request for these files will be run without the " | lolcat" command.
 
+fuse-colors optionally takes a second argument describing the command you
+want to run when something is requested. "__command__" will be replaced with
+the file of the thing being requested and any parameters to that command. It
+tries to find "lolcat" if no template is passed.
+
 =head1 DEPENDENCIES
 
 fuse-colors depends on the Fuse module, the "objdump" command, and lolcat:
@@ -49,21 +52,32 @@ Newer Ubuntu systems have a package for lolcat.
 
 Get set up by making a directory and mounting fuse-colors there:
         
-        mkdir /tmp/fuse-colors
-        ./fuse-colors.pl /tmp/fuse-colors
+        mkdir /tmp/fuse
+        ./fuse-colors.pl /tmp/fuse
 		bash
-        PATH=/tmp/fuse-colors
+        PATH=/tmp/fuse
 
-You could technically keep your PATH on the end (PATH=/tmp/fuse-colors:$PATH), 
+You could technically keep your PATH on the end (PATH=/tmp/fuse:$PATH), 
 but it's less exciting that way. Then run whatever you'd normally run, or 
 whatever generates lots of pretty words.
 
         yes "this is awesome"
         ls -lha
 
-You can force the ncurses cache to update by running (assuming your mount is /tmp/fuse-colors):
+You can force the ncurses cache to update by running (assuming your mount is /tmp/fuse):
 
-		cat /tmp/fuse-colors/refresh-ncurses-cache
+		cat /tmp/fuse/refresh-ncurses-cache
+
+You can make fuse-colors do anything you want. To automatically append "haha"
+to every command, start fuse-colors with something like:
+
+	./fuse-colors.pl /tmp/fuse '__command__ && echo "haha"'
+
+Here's a makeshift command-logger:
+
+	./fuse-colors.pl ~/fuse 'echo "Command is: __command__" >> /tmp/commands.txt; __command__ | tee -a /tmp/commands.txt'
+
+Be safe!
 
 =head1 BUGS
 
@@ -71,7 +85,8 @@ I'm not aware of any outstanding bugs at this time, although there are parts of 
 code I'd like to make more resilient. Properly daemonizing fuse-colors
 may be helpful in the event that this turns out to be exciting for people. If you
 ctrl-c out of fuse-colors, please note that you'll need to unmount the path you
-specified originally before remounting.
+specified originally before remounting. If you launched it as root, you can
+just umount it, otherwise user 'fusermount -u'
 
 =head1 AUTHOR
 
