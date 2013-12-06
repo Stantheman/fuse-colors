@@ -61,6 +61,10 @@ whatever generates lots of pretty words.
         yes "this is awesome"
         ls -lha
 
+You can force the ncurses cache to update by running (assuming your mount is /tmp/fuse-colors):
+
+		cat /tmp/fuse-colors/refresh-ncurses-cache
+
 =head1 BUGS
 
 I'm not aware of any outstanding bugs at this time, although there are parts of the

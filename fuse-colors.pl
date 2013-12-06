@@ -4,6 +4,7 @@ use warnings;
 use File::Find;
 use File::Which;
 use Fuse;
+use POSIX 'EINVAL';
 
 my $mountpoint = shift || die "Usage: $0 /path/to/mount/at";
 $mountpoint =~ s|/$||;
@@ -48,7 +49,11 @@ exec "PATH='} . join(':', @paths) . qq{' $file \$input};
 	# if we're execing an ncurses binary, don't colorize it
 	if (exists($bad_list->{$file})) {
 		$result .= '";' . "\n";
-	} else {
+	} elsif ($file eq 'refresh-ncurses-cache') {
+		$bad_list = get_curses(@paths);
+		return 'finished';
+	}
+	else {
 		$result .= qq{ | $lolcat";
 };
 	}
@@ -57,6 +62,10 @@ exec "PATH='} . join(':', @paths) . qq{' $file \$input};
 	return -EINVAL() if $offset > length($result);
 	return 0 if $offset == length($result);
 	return substr($result,$offset,$size);
+}
+
+sub fuse_open {
+	return 0;
 }
 
 # show the user stuff that looks real
@@ -79,11 +88,7 @@ sub fuse_readlink {
 }
 
 sub fuse_getdir {
-	return ('.', 0);
-}
-
-sub fuse_open {
-	return (0);
+	return ('.', 'refresh-ncurses-cache', 0);
 }
 
 # taken from the Fuse example code
