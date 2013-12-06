@@ -16,6 +16,7 @@ my @paths = get_path();
 my $bad_list = get_curses(@paths);
 
 my $lolcat = get_lolcat();
+my $command_template = shift || "__command__ | $lolcat";
 
 Fuse::main(
 	mountpoint => $mountpoint,
@@ -42,17 +43,20 @@ use warnings;
 
 my \$input = join(' ', \@ARGV);
 
-exec "PATH='} . join(':', @paths) . qq{' $file \$input};
+exec qq!PATH='} . join(':', @paths) . "' ";
+
+	(my $real_command = $command_template) =~ s/__command__/$file \$input/g;
 
 	# if we're execing an ncurses binary, don't colorize it
 	if (exists($bad_list->{$file})) {
-		$result .= '";' . "\n";
+		$result .= "$file \$input!;\n";
 	} elsif ($file eq 'refresh-ncurses-cache') {
 		$bad_list = get_curses(@paths);
 		return 'finished';
-	}
-	else {
-		$result .= qq{ | $lolcat";
+	} else {
+		$result .= qq{bash <<__BASH_END__
+($real_command)
+__BASH_END__!
 };
 	}
 
