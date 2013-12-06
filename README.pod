@@ -2,6 +2,13 @@
 
 fuse-colors.pl - automatically make most commands colorful
 
+=begin HTML
+
+<img src="http://i.imgur.com/z2d2jov.png"
+width="858" height="171" alt="fuse-colors" />
+
+=end HTML
+
 =head1 USAGE
 
 	./fuse-colors.pl /tmp/fuse
