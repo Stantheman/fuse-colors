@@ -64,7 +64,7 @@ sub fuse_getattr {
 
 	# dev,ino,modes,nlink,uid,gid,rdev,size,atime,mtime,ctime,blksize,blocks
 	if ($filename eq '/') {
-		return (0, 0, 0040777, 1, 0, 0, 0, 0, 0, 0, 0, 4096, 0);
+		return (0, 0, 0040755, 1, 0, 0, 0, 0, 0, 0, 0, 4096, 0);
 	} else {
 		# this is actually funny, the file size used to be 100 bytes, but
 		# my meta perl scripts got larger than that, so I bumped to 400
