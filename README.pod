@@ -6,6 +6,7 @@ fuse-colors.pl - automatically make most commands colorful
 
         mkdir /tmp/fuse-colors
         ./fuse-colors.pl /tmp/fuse-colors
+		bash
         PATH=/tmp/fuse-colors
 
 =head1 DESCRIPTION
@@ -39,7 +40,7 @@ https://github.com/busyloop/lolcat
 lolcat is like the `cat` command, except its output is very colorful. On Debian,
 the dependencies can be installed by running:
 
-        apt-get install fuse libfuse-perl binutils
+        apt-get install fuse libfuse-perl libfile-which-perl
         gem install lolcat
 
 Newer Ubuntu systems have a package for lolcat.
@@ -50,6 +51,7 @@ Get set up by making a directory and mounting fuse-colors there:
         
         mkdir /tmp/fuse-colors
         ./fuse-colors.pl /tmp/fuse-colors
+		bash
         PATH=/tmp/fuse-colors
 
 You could technically keep your PATH on the end (PATH=/tmp/fuse-colors:$PATH), 

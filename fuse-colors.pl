@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 use File::Find;
+use File::Which;
 use Fuse;
 
 my $mountpoint = shift || die "Usage: $0 /path/to/mount/at";
@@ -96,9 +97,11 @@ sub _filename_fixup {
 # piping vim into a variant of cat isn't fun, so grab every ncurses binary
 # and put it on a bad list
 sub get_curses {
+	print "Creating a list of ncurses binaries to leave alone\n";
 
-	unless (-e '/usr/bin/objdump') {
-		print "Unable to determine which binaries come with ncurses.\n";
+	my $ldd = which('ldd');
+	unless ($ldd) {
+		print "Can't find ldd, so I can't determine which binaries come with ncurses.\n";
 		print "Continuing anyway, just don't use those binaries <3 \n";
 		return {};
 	}
@@ -114,20 +117,21 @@ sub get_curses {
 
 	# objdump all of them at once instead of spinning 1000+ objdump procs
 	# turns 10s into <1s
-	open my $fh, '-|', '/usr/bin/objdump -p ' . join(' ', @files) . ' 2>&1';
+	open my $fh, '-|', "$ldd " . join(' ', @files) . ' 2>&1';
 
 	my $ret = {};
 
 	# parse dat output
 	my $current_cmd;
 	while (my $line = <$fh>) {
-		if ($line =~ m|([^/]*?):\s*file format|) {
+		if ($line =~ m|([^/]*?):$|) {
 			$current_cmd = $1;
-		} elsif ($line =~ /\s*NEEDED\s*libncurses/) {
+		} elsif ($line =~ /libncurses.*?=>/) {
 			$ret->{$current_cmd}++;
 		}
 	}
 
+	print "List created, starting\n";
 	# return a hash of short names of commands that are not lolcat friendly
 	return $ret;
 }
