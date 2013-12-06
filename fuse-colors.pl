@@ -9,8 +9,6 @@ use POSIX 'EINVAL';
 my $mountpoint = shift || die "Usage: $0 /path/to/mount/at";
 $mountpoint =~ s|/$||;
 
-die "lolfs must be run as root in order to mount FUSE" unless ($< == 0);
-
 # get a sane list of paths
 my @paths = get_path();
 
@@ -156,7 +154,7 @@ sub get_path {
 			die;
 		}
 
-		print STDERR "lolfs is going to use the following:\n";
+		print STDERR "fuse-colors is going to use the following:\n";
 		print STDERR "\t$_\n" foreach(@default_path);
 		return @default_path;
 	}
