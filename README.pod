@@ -36,7 +36,7 @@ tries to find "lolcat" if no template is passed.
 
 =head1 DEPENDENCIES
 
-fuse-colors depends on the Fuse module, the "objdump" command, and lolcat:
+fuse-colors depends on the Fuse module, ldd, and lolcat:
 
 https://github.com/busyloop/lolcat
 
@@ -54,7 +54,7 @@ Get set up by making a directory and mounting fuse-colors there:
         
         mkdir /tmp/fuse
         ./fuse-colors.pl /tmp/fuse
-		bash
+	bash
         PATH=/tmp/fuse
 
 You could technically keep your PATH on the end (PATH=/tmp/fuse:$PATH), 
@@ -66,10 +66,10 @@ whatever generates lots of pretty words.
 
 You can force the ncurses cache to update by running (assuming your mount is /tmp/fuse):
 
-		cat /tmp/fuse/refresh-ncurses-cache
+	cat /tmp/fuse/refresh-ncurses-cache
 
 You can make fuse-colors do anything you want. To automatically append "haha"
-to every command, start fuse-colors with something like:
+to the output of every command, start fuse-colors with something like:
 
 	./fuse-colors.pl /tmp/fuse '__command__ && echo "haha"'
 
