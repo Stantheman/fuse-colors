@@ -1,4 +1,4 @@
-# NAME
+# Fuse-colors
 
 fuse-colors.pl - automatically make most commands colorful
 
