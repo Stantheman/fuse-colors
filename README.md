@@ -1,24 +1,20 @@
-=head1 NAME
+# NAME
 
 fuse-colors.pl - automatically make most commands colorful
-
-=begin HTML
 
 <img src="http://i.imgur.com/z2d2jov.png"
 width="858" height="171" alt="fuse-colors" />
 
-=end HTML
-
-=head1 USAGE
+# USAGE
 
 	./fuse-colors.pl /tmp/fuse
 	./fuse-colors.pl /tmp/fuse '__command__ && echo "haha"'
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 This script helps you to automatically append " | lolcat" to most commands.
 
-I was in #climagic on Freenode when "adprice" asked if there was a way to
+I was in \#climagic on Freenode when "adprice" asked if there was a way to
 have bash automatically append " | lolcat" to all of his commands. The channel
 discussed different solutions for a bit before I decided to make fuse-colors.
 When you mount fuse-colors to a directory, the next immediate step should be to
@@ -37,17 +33,17 @@ fuse-colors builds a list of binaries that have been linked to ncurses. Any
 request for these files will be run without the " | lolcat" command.
 
 fuse-colors optionally takes a second argument describing the command you
-want to run when something is requested. "__command__" will be replaced with
+want to run when something is requested. "\_\_command\_\_" will be replaced with
 the file of the thing being requested and any parameters to that command. It
 tries to find "lolcat" if no template is passed.
 
-=head1 DEPENDENCIES
+# DEPENDENCIES
 
 fuse-colors depends on the Fuse module, ldd, and lolcat:
 
 https://github.com/busyloop/lolcat
 
-lolcat is like the `cat` command, except its output is very colorful. On Debian,
+lolcat is like the \`cat\` command, except its output is very colorful. On Debian,
 the dependencies can be installed by running:
 
         apt-get install fuse fuse-utils libfuse-perl libfile-which-perl
@@ -55,10 +51,11 @@ the dependencies can be installed by running:
 
 Newer Ubuntu systems have a package for lolcat.
 
-=head1 EXAMPLES
+# EXAMPLES
 
 Get set up by making a directory and mounting fuse-colors there:
         
+
         mkdir /tmp/fuse
         ./fuse-colors.pl /tmp/fuse
 	bash
@@ -86,7 +83,7 @@ Here's a makeshift command-logger:
 
 Be safe!
 
-=head1 BUGS
+# BUGS
 
 I'm not aware of any outstanding bugs at this time, although there are parts of the
 code I'd like to make more resilient. Properly daemonizing fuse-colors
@@ -95,6 +92,6 @@ ctrl-c out of fuse-colors, please note that you'll need to unmount the path you
 specified originally before remounting. If you launched it as root, you can
 just umount it, otherwise user 'fusermount -u'
 
-=head1 AUTHOR
+# AUTHOR
 
 Stan Schwertly (http://www.schwertly.com)
