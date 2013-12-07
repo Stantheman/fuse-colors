@@ -2,8 +2,7 @@
 
 fuse-colors.pl - automatically make most commands colorful
 
-<img src="http://i.imgur.com/z2d2jov.png"
-width="858" height="171" alt="fuse-colors" />
+<img src="http://i.imgur.com/z2d2jov.png" width="858" height="171" alt="fuse-colors" />
 
 # USAGE
 
@@ -12,7 +11,7 @@ width="858" height="171" alt="fuse-colors" />
 
 # DESCRIPTION
 
-This script helps you to automatically append " | lolcat" to most commands.
+This script helps you by automatically appending " | lolcat" to most commands.
 
 I was in \#climagic on Freenode when "adprice" asked if there was a way to
 have bash automatically append " | lolcat" to all of his commands. The channel
@@ -46,27 +45,27 @@ https://github.com/busyloop/lolcat
 lolcat is like the \`cat\` command, except its output is very colorful. On Debian,
 the dependencies can be installed by running:
 
-        apt-get install fuse fuse-utils libfuse-perl libfile-which-perl
-        gem install lolcat
+	apt-get install fuse fuse-utils libfuse-perl libfile-which-perl
+	gem install lolcat
 
 Newer Ubuntu systems have a package for lolcat.
 
 # EXAMPLES
 
 Get set up by making a directory and mounting fuse-colors there:
-        
 
-        mkdir /tmp/fuse
-        ./fuse-colors.pl /tmp/fuse
+	mkdir /tmp/fuse
+	./fuse-colors.pl /tmp/fuse
+	# either in a new window, or after backgrounding fuse-colors:
 	bash
-        PATH=/tmp/fuse
+	PATH=/tmp/fuse
 
-You could technically keep your PATH on the end (PATH=/tmp/fuse:$PATH), 
-but it's less exciting that way. Then run whatever you'd normally run, or 
+You could technically keep your PATH on the end (PATH=/tmp/fuse:$PATH),
+but it's less exciting that way. Then run whatever you'd normally run, or
 whatever generates lots of pretty words.
 
-        yes "this is awesome"
-        ls -lha
+	yes "this is awesome"
+	ls -lha
 
 You can force the ncurses cache to update by running (assuming your mount is /tmp/fuse):
 
@@ -85,12 +84,13 @@ Be safe!
 
 # BUGS
 
-I'm not aware of any outstanding bugs at this time, although there are parts of the
-code I'd like to make more resilient. Properly daemonizing fuse-colors
-may be helpful in the event that this turns out to be exciting for people. If you
-ctrl-c out of fuse-colors, please note that you'll need to unmount the path you
-specified originally before remounting. If you launched it as root, you can
-just umount it, otherwise user 'fusermount -u'
+I'm not aware of any outstanding bugs at this time, although there are parts
+of the code I'd like to make more resilient. Properly daemonizing fuse-colors
+may be helpful in the event that this turns out to be exciting for people.
+
+If you ctrl-c out of fuse-colors, please note that you'll need to unmount the
+path you specified originally before remounting. If you launched it as root,
+you can just umount it, otherwise use 'fusermount -u'
 
 # AUTHOR
 
