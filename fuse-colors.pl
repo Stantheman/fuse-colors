@@ -6,7 +6,7 @@ use File::Which;
 use Fuse;
 use POSIX 'EINVAL';
 
-my $mountpoint = shift || die "Usage: $0 /path/to/mount/at";
+my $mountpoint = shift || die "Usage: $0 /path/to/mount/at <template>";
 $mountpoint =~ s|/$||;
 
 # get a sane list of paths
@@ -15,9 +15,17 @@ my @paths = get_path();
 # get a list of binaries that use ncurses
 my $bad_list = get_curses(@paths);
 
-my $lolcat = get_lolcat();
-my $command_template = shift || "__command__ | $lolcat";
+# try to get a template from them, otherwise lolcat
+my $command_template = shift;
+unless ($command_template) {
+	my $lolcat = get_lolcat();
+	$command_template = "__command__ | $lolcat";
+}
+print "Going to be running the following command for most commands\n";
+print "\t$command_template\n";
+print "Mounting now. Go ahead and use fuse-colors!\n";
 
+# mount the needful
 Fuse::main(
 	mountpoint => $mountpoint,
 	# let other users see this mount
@@ -90,6 +98,8 @@ sub fuse_readlink {
 }
 
 sub fuse_getdir {
+	# the refresh-ncurses-cache file can be read to regen the
+	# list of bad files
 	return ('.', 'refresh-ncurses-cache', 0);
 }
 
@@ -106,41 +116,62 @@ sub _filename_fixup {
 sub get_curses {
 	print "Creating a list of ncurses binaries to leave alone\n";
 
-	my $ldd = which('ldd');
-	unless ($ldd) {
-		print "Can't find ldd, so I can't determine which binaries come with ncurses.\n";
-		print "Continuing anyway, just don't use those binaries <3 \n";
-		return {};
-	}
+	my $tool = _get_ncurses_tool() || return {};
 
 	my @paths = @_ ;
 	my @files;
-	find( sub {
-		# we only want binary executable files/links
-		return unless (-f $_ || -l $_);
-		return unless -X $_;
-		push @files, $File::Find::name;
+	find( {
+		wanted => sub {
+			push @files, $File::Find::name;
+		},
+		preprocess => sub {
+			# we only want binary executable files/links
+			# since this strips dirs, it's maxdepth=1, which we want
+			return grep { (-r -x $_) && (-f $_ || -l $_) } @_;
+		},
 	}, @paths);
 
-	# objdump all of them at once instead of spinning 1000+ objdump procs
-	# turns 10s into <1s
-	open my $fh, '-|', "$ldd " . join(' ', @files) . ' 2>&1';
+	# do them all of them at once instead of spinning 1000+ procs
+	open my $fh, '-|', "$tool->{location} $tool->{flags} " . join(' ', @files) . ' 2>&1';
 
 	my $ret = {};
 
 	# parse dat output
 	my $current_cmd;
 	while (my $line = <$fh>) {
+		# actually got pretty lucky here since otool and ldd are identical in this regard
 		if ($line =~ m|([^/]*?):$|) {
 			$current_cmd = $1;
-		} elsif ($line =~ /libncurses.*?=>/) {
+		} elsif ($line =~ /libncurses/) {
 			$ret->{$current_cmd}++;
 		}
 	}
 
-	print "List created, starting\n";
-	# return a hash of short names of commands that are not lolcat friendly
+	print "List initialization finished, starting fuse mount\n";
 	return $ret;
+}
+
+sub _get_ncurses_tool {
+	my $tool;
+	if ($^O eq 'linux') {
+		$tool->{name} = 'ldd';
+		$tool->{flags} = '';
+	} elsif ($^O eq 'darwin') {
+		$tool->{name} = 'otool';
+		$tool->{flags} = '-L';
+	} else {
+		print "Can't determine your OS, so I can't guess which binaries use ncurses.\n";
+		print "Continuing anyway, just don't use those binaries <3\n";
+		return;
+	}
+
+	$tool->{location} = which($tool->{name});
+	unless ($tool->{location}) {
+		print "Can't find $tool->{name}, so I can't determine which binaries come with ncurses.\n";
+		print "Continuing anyway, just don't use those binaries <3 \n";
+		return;
+	}
+	return $tool;
 }
 
 # you wouldn't believe how un-fun debugging becomes when you start
