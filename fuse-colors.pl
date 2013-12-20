@@ -45,28 +45,7 @@ sub fuse_read {
 	my ($size, $offset, $fh) = @_;
 
 	# both scenarios use this perl
-	my $result = qq{#!/usr/bin/perl
-use strict;
-use warnings;
-
-my \$input = join(' ', \@ARGV);
-
-exec qq!PATH='} . join(':', @paths) . "' ";
-
-	(my $real_command = $command_template) =~ s/__command__/$file \$input/g;
-
-	# if we're execing an ncurses binary, don't colorize it
-	if (exists($bad_list->{$file})) {
-		$result .= "$file \$input!;\n";
-	} elsif ($file eq 'refresh-ncurses-cache') {
-		$bad_list = get_curses(@paths);
-		return 'finished';
-	} else {
-		$result .= qq{bash <<__BASH_END__
-($real_command)
-__BASH_END__!
-};
-	}
+	my $result = _get_executable_script($file);
 
 	# from Fuse example, modified
 	return -EINVAL() if $offset > length($result);
@@ -80,15 +59,15 @@ sub fuse_open {
 
 # show the user stuff that looks real
 sub fuse_getattr {
-	my $filename = shift;
+	my $filename = _filename_fixup(shift);
+
+	my $size = length(_get_executable_script($filename));
 
 	# dev,ino,modes,nlink,uid,gid,rdev,size,atime,mtime,ctime,blksize,blocks
 	if ($filename eq '/') {
 		return (0, 0, 0040755, 1, 0, 0, 0, 0, 0, 0, 0, 4096, 0);
 	} else {
-		# this is actually funny, the file size used to be 100 bytes, but
-		# my meta perl scripts got larger than that, so I bumped to 400
-		return (0, 0, 0100777, 1, 0, 0, 0, 400, 0, 0, 0, 4096, 0);
+		return (0, 0, 0100777, 1, 0, 0, 0, $size, 0, 0, 0, 4096, 0);
 	}
 }
 
@@ -149,6 +128,36 @@ sub get_curses {
 
 	print "List initialization finished, starting fuse mount\n";
 	return $ret;
+}
+
+sub _get_executable_script {
+	my $file = shift;
+
+    # both scenarios use this part of the template
+    my $result = qq{#!/usr/bin/perl
+use strict;
+use warnings;
+
+my \$input = join(' ', \@ARGV);
+
+exec qq!PATH='} . join(':', @paths) . "' ";
+
+    (my $real_command = $command_template) =~ s/__command__/$file \$input/g;
+
+    # if we're execing an ncurses binary, don't colorize it
+    if (exists($bad_list->{$file})) {
+        $result .= "$file \$input!;\n";
+    } elsif ($file eq 'refresh-ncurses-cache') {
+        $bad_list = get_curses(@paths);
+        return 'finished';
+    } else {
+        $result .= qq{bash <<__BASH_END__
+($real_command)
+__BASH_END__!
+};
+    }
+
+	return $result;
 }
 
 sub _get_ncurses_tool {
